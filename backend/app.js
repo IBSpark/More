@@ -12,6 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/', indexRouter);
+app.use('/',)
 app.use('/users', usersRouter);
 
 // MongoDB connection with simple caching

@@ -1,9 +1,21 @@
-var express = require('express');
-var router = express.Router();
+const express = require("express");
+const cors = require("cors");
+const serverless = require("serverless-http");
+require("dotenv").config();
 
-/* GET home page. */
-router.get('/', function(req, res) {
-  res.json({ message: 'API is working', title: 'Express' });
+const usersHandler = require("./users").default;
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Health check
+app.get("/", (req, res) => {
+  res.json({ message: "API running on Vercel" });
 });
 
-module.exports = router;
+// Users API
+app.all("/users/*", (req, res) => usersHandler(req, res));
+
+module.exports.handler = serverless(app);
