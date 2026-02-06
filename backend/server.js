@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { useActionState } from "react";
 
 dotenv.config();
 
@@ -20,12 +19,13 @@ app.use("/api/login", (req, res) =>
 app.use("/api/update", (req, res) =>
   import("./api/update.js").then((mod) => mod.default(req, res))
 );
-// app.get('/',(req,res)=>{
-//     res.send({
-//         useActionState:true, error:false,
+app.get('/',(req,res)=>{
+    res.send({
+        activeStatus: true, 
+        error: false,
         
-//     })
-// })
+    })
+})
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
