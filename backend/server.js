@@ -1,33 +1,39 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+import signup from "./api/signup.js";
+import login from "./api/login.js";
+import update from "./api/update.js";
 
 dotenv.config();
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
-// Local routing for Vercel‑style API
-app.use("/api/signup", (req, res) =>
-  import("./api/signup.js").then((mod) => mod.default(req, res))
-);
-app.use("/api/login", (req, res) =>
-  import("./api/login.js").then((mod) => mod.default(req, res))
-);
-app.use("/api/update", (req, res) =>
-  import("./api/update.js").then((mod) => mod.default(req, res))
-);
-app.get('/',(req,res)=>{
-    res.send({
-        activeStatus: true, 
-        error: false,
-        
-    })
-})
+let isConnected = false;
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Local server running at http://localhost:${PORT}`);
+async function connectToMongoDB() {
+  if (isConnected) return;
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    isConnected = true;
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
+}
+
+connectToMongoDB();
+
+app.use("/api/signup", signup);
+app.use("/api/login", login);
+app.use("/api/update", update);
+
+app.get("/", (req, res) => {
+  res.json({ activeStatus: true, error: false });
 });
+
+export default app;
